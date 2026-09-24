@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'admin@honeychain.io' ||
+        request.auth.token.email == 'mansoorpattan2@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function hasRole(role) {
+      return isSignedIn() && (
+        isAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role)
+      );
+    }
+
+    // Users collection: Public profiles can be read if needed, but user write is owner or admin
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Honey Batches: Public can read batches for QR scanning & Passport verification!
+    // Demo batches can be initially seeded; authorized supply chain actors can create/update
+    match /honeyBatches/{batchId} {
+      allow read: if true;
+      allow create: if (batchId in ['HNY-2026-0001', 'HNY-2026-0002', 'HNY-2026-0003']) ||
+                       (isSignedIn() && (hasRole('beekeeper') || hasRole('processor') || isAdmin()));
+      allow update: if isSignedIn() && (hasRole('beekeeper') || hasRole('laboratory_officer') || hasRole('processor') || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Provenance Events: Public can read for journey audit; demo events seedable, actors can append
+    match /provenanceEvents/{eventId} {
+      allow read: if true;
+      allow create: if (eventId in ['EVT-001', 'EVT-002', 'EVT-003', 'EVT-004', 'EVT-005', 'EVT-006']) ||
+                       (isSignedIn() && (hasRole('beekeeper') || hasRole('laboratory_officer') || hasRole('processor') || isAdmin()));
+      allow update, delete: if isAdmin();
+    }
+
+    // Lab Reports: Public can read for verification passport, demo lab report seedable
+    match /labReports/{reportId} {
+      allow read: if true;
+      allow create: if (reportId in ['EUR-IND-2026-991']) ||
+                       (isSignedIn() && (hasRole('laboratory_officer') || isAdmin()));
+      allow update: if isSignedIn() && (hasRole('laboratory_officer') || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Processing Records: Public read for passport transparency, processor/admin write
+    match /processingRecords/{recordId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && (hasRole('processor') || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Packaging Records: Public read for passport transparency, processor/admin write
+    match /packagingRecords/{recordId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && (hasRole('processor') || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Smart Hives & Sensor Readings: Public read for telemetry metrics on batch, demo items seedable
+    match /hives/{hiveId} {
+      allow read: if true;
+      allow create: if (hiveId in ['HIVE-AP-0042', 'HIVE-KSH-0108']) ||
+                       (isSignedIn() && (hasRole('beekeeper') || isAdmin()));
+      allow update: if isSignedIn() && (hasRole('beekeeper') || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /sensorReadings/{readingId} {
+      allow read: if true;
+      allow create: if (readingId in ['READ-HIVE-0042-01']) ||
+                       (isSignedIn() && (hasRole('beekeeper') || isAdmin()));
+      allow update, delete: if isAdmin();
+    }
+
+    // Verification records (scans): Public create to log attestation, admins can read/list
+    match /verificationRecords/{verificationId} {
+      allow create: if true;
+      allow read: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+  }
+}

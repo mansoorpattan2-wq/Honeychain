@@ -1,0 +1,210 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["beekeeper", "laboratory_officer", "processor", "admin", "consumer"] },
+        "organization": { "type": "string" },
+        "registrationNumber": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role", "displayName"]
+    },
+    "Hive": {
+      "title": "Hive",
+      "description": "Smart apiary hive information and metadata",
+      "type": "object",
+      "properties": {
+        "hiveId": { "type": "string" },
+        "name": { "type": "string" },
+        "beekeeperUid": { "type": "string" },
+        "locationName": { "type": "string" },
+        "coordinates": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["hiveId", "name", "beekeeperUid", "coordinates"]
+    },
+    "SensorReading": {
+      "title": "SensorReading",
+      "description": "IoT telemetry readings from smart hives",
+      "type": "object",
+      "properties": {
+        "readingId": { "type": "string" },
+        "hiveId": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "broodTemp": { "type": "string" },
+        "humidity": { "type": "string" },
+        "queenAcoustics": { "type": "string" },
+        "pressure": { "type": "string" },
+        "recordedBy": { "type": "string" }
+      },
+      "required": ["readingId", "hiveId", "timestamp", "broodTemp", "humidity"]
+    },
+    "HoneyBatch": {
+      "title": "HoneyBatch",
+      "description": "Verified botanical honey batch with lifecycle statuses",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string" },
+        "uniqueId": { "type": "string" },
+        "honeyType": { "type": "string" },
+        "vesselSize": { "type": "string" },
+        "beekeeper": { "type": "string" },
+        "beekeeperUid": { "type": "string" },
+        "beekeeperReg": { "type": "string" },
+        "beekeeperQuote": { "type": "string" },
+        "hiveId": { "type": "string" },
+        "harvestDate": { "type": "string" },
+        "location": { "type": "string" },
+        "coordinates": { "type": "string" },
+        "quantity": { "type": "string" },
+        "labStatus": { "type": "string", "enum": ["pending", "verified", "rejected"] },
+        "processingStatus": { "type": "string", "enum": ["harvested", "extracted", "filtered", "bottled"] },
+        "packagingStatus": { "type": "string", "enum": ["unsealed", "sealed_tamper_evident"] },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "flagged"] },
+        "nfcTag": { "type": "string" },
+        "rootHash": { "type": "string" },
+        "blockNumber": { "type": "string" },
+        "blockTimestamp": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["batchId", "honeyType", "beekeeper", "hiveId", "harvestDate", "location", "quantity", "labStatus", "processingStatus", "packagingStatus", "verificationStatus"]
+    },
+    "LabReport": {
+      "title": "LabReport",
+      "description": "Accredited biochemical lab testing certificate and metrics",
+      "type": "object",
+      "properties": {
+        "reportId": { "type": "string" },
+        "batchId": { "type": "string" },
+        "labName": { "type": "string" },
+        "analystUid": { "type": "string" },
+        "accreditation": { "type": "string" },
+        "sampleId": { "type": "string" },
+        "sampleReceivedDate": { "type": "string" },
+        "verifiedReleasedDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["passed", "failed"] },
+        "c4Sugar": { "type": "string" },
+        "diastase": { "type": "string" },
+        "hmf": { "type": "string" },
+        "floralDna": { "type": "string" },
+        "moisture": { "type": "string" },
+        "documentUrl": { "type": "string" },
+        "documentName": { "type": "string" },
+        "digitalSignatureHash": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["reportId", "batchId", "labName", "c4Sugar", "diastase", "hmf", "floralDna", "moisture", "status"]
+    },
+    "ProcessingRecord": {
+      "title": "ProcessingRecord",
+      "description": "Honey extraction, cold filtering, and thermal telemetry record",
+      "type": "object",
+      "properties": {
+        "recordId": { "type": "string" },
+        "batchId": { "type": "string" },
+        "facility": { "type": "string" },
+        "processorUid": { "type": "string" },
+        "extractionTemp": { "type": "string" },
+        "method": { "type": "string" },
+        "pasteurized": { "type": "boolean" },
+        "timestamp": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["recordId", "batchId", "facility", "extractionTemp", "timestamp"]
+    },
+    "PackagingRecord": {
+      "title": "PackagingRecord",
+      "description": "Bottling, tamper NFC seal, and packaging details",
+      "type": "object",
+      "properties": {
+        "recordId": { "type": "string" },
+        "batchId": { "type": "string" },
+        "facility": { "type": "string" },
+        "bottlerUid": { "type": "string" },
+        "nfcTagId": { "type": "string" },
+        "vesselBatch": { "type": "string" },
+        "totalUnits": { "type": "number" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["recordId", "batchId", "facility", "nfcTagId", "timestamp"]
+    },
+    "ProvenanceEvent": {
+      "title": "ProvenanceEvent",
+      "description": "Immutable chronicle event along the honey chain",
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string" },
+        "batchId": { "type": "string" },
+        "eventType": { "type": "string" },
+        "actor": { "type": "string" },
+        "actorUid": { "type": "string" },
+        "actorRole": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "location": { "type": "string" },
+        "description": { "type": "string" },
+        "evidenceReference": { "type": "string" },
+        "hash": { "type": "string" }
+      },
+      "required": ["eventId", "batchId", "eventType", "actor", "timestamp", "description"]
+    },
+    "VerificationRecord": {
+      "title": "VerificationRecord",
+      "description": "Audit record of consumer scans and cryptographic verification checks",
+      "type": "object",
+      "properties": {
+        "verificationId": { "type": "string" },
+        "batchId": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "clientType": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["verificationId", "batchId", "timestamp", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Registered HoneyChain actors and roles"
+    },
+    "/hives/{hiveId}": {
+      "schema": { "$ref": "#/entities/Hive" },
+      "description": "Registered smart hives"
+    },
+    "/sensorReadings/{readingId}": {
+      "schema": { "$ref": "#/entities/SensorReading" },
+      "description": "Smart hive sensor observations"
+    },
+    "/honeyBatches/{batchId}": {
+      "schema": { "$ref": "#/entities/HoneyBatch" },
+      "description": "Honey batch records accessible publicly for verification"
+    },
+    "/labReports/{reportId}": {
+      "schema": { "$ref": "#/entities/LabReport" },
+      "description": "Accredited biochemical lab reports for batches"
+    },
+    "/processingRecords/{recordId}": {
+      "schema": { "$ref": "#/entities/ProcessingRecord" },
+      "description": "Processing and cold-extraction records"
+    },
+    "/packagingRecords/{recordId}": {
+      "schema": { "$ref": "#/entities/PackagingRecord" },
+      "description": "Bottling and tamper seal records"
+    },
+    "/provenanceEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/ProvenanceEvent" },
+      "description": "Immutable chain-of-custody provenance timeline events"
+    },
+    "/verificationRecords/{verificationId}": {
+      "schema": { "$ref": "#/entities/VerificationRecord" },
+      "description": "Logs of consumer scan attestations"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "HoneyChain — Optical Ledger & Botanical Provenance",
+  "description": "Cryptographic provenance, zero-knowledge origin verification, and optical ledger passport for wild forest honey.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
